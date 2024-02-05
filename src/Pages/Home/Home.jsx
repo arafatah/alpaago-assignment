@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserTable from "../../Components/UserTable/UserTable";
+import { useTable } from "react-table";
 
 const api = {
   key: "ce12f0e2cd5dd2bc551013acbcb9f3aa",
@@ -10,6 +11,40 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const [weather, setWeather] = useState({});
 
+  const handleAdd = (userId) => {
+    // Logic to add user to inactive list
+    setUsers((prevUsers) => {
+      const updatedUsers = prevUsers.map((user) =>
+        user.id === userId ? { ...user, status: "Inactive" } : user
+      );
+      return updatedUsers;
+    });
+  };
+
+  const handleDelete = (userId) => {
+    // Logic to delete user
+    setUsers((prevUsers) => {
+      const updatedUsers = prevUsers.filter((user) => user.id !== userId);
+      return updatedUsers;
+    });
+  };
+
+  const handleChangeStatus = (userId) => {
+    // Logic to change user status
+
+    setUsers((prevUsers) => {
+      const updatedUsers = prevUsers.map((user) =>
+        user.id === userId
+          ? {
+              ...user,
+              status: user.status === "Active" ? "Inactive" : "Active",
+            }
+          : user
+      );
+      return updatedUsers;
+    });
+  };
+
   const [users, setUsers] = useState(
     Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
@@ -18,18 +53,6 @@ const Home = () => {
       status: i % 2 === 0 ? "Active" : "Inactive",
     }))
   );
-
-  const handleAdd = (userId) => {
-    // Logic to add user to inactive list
-  };
-
-  const handleDelete = (userId) => {
-    // Logic to delete user
-  };
-
-  const handleChangeStatus = (userId) => {
-    // Logic to change user status
-  };
 
   const searchPressed = (e) => {
     e.preventDefault();
@@ -42,7 +65,7 @@ const Home = () => {
 
   return (
     <div>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-96 py-28 flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-md shadow-md w-96">
           <h1 className="text-3xl font-semibold mb-6 text-center">
             Weather Update
@@ -72,12 +95,14 @@ const Home = () => {
           )}
         </div>
       </div>
-      <UserTable
-        users={users}
-        onAdd={handleAdd}
-        onDelete={handleDelete}
-        onChangeStatus={handleChangeStatus}
-      />
+      <div>
+        <UserTable
+          users={users}
+          onAdd={handleAdd}
+          onDelete={handleDelete}
+          onChangeStatus={handleChangeStatus}
+        />
+      </div>
     </div>
   );
 };
